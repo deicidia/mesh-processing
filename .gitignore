@@ -1,0 +1,23 @@
+# --- Fichiers de données volumineux (maillages) ---
+/data/*
+!/data/.gitignore
+
+# --- CMake / Build ---
+build/
+bin/
+lib/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.ninja
+
+# --- Compilateurs & IDEs ---
+*.obj
+*.o
+*.exe
+*.out
+.vscode/
+.vs/
+.idea/
+*.user
