@@ -3,14 +3,17 @@
 !/data/.gitignore
 
 # --- CMake / Build ---
-build/
+build*/
 bin/
 lib/
+CMakeUserPresets.json
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 Makefile
 *.ninja
+*.cache
+*.log
 
 # --- Compilateurs & IDEs ---
 *.obj
