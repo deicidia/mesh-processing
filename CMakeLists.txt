@@ -17,6 +17,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Kokkos)
 
-add_executable(HelloKokkos test/HelloKokkos.cpp)
-target_link_libraries(HelloKokkos Kokkos::kokkos)
+add_executable(kokkos_info test/kokkos_info.cpp)
+target_link_libraries(kokkos_info Kokkos::kokkos)
 
