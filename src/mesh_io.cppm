@@ -1,18 +1,23 @@
 module; 
 
 #include <libmeshb8.h>
-#include <Kokkos_Core.hpp>
 #include <print>
 #include <cstdio>
-#include <string> 
+#include <string>
+#include <filesystem>
 
 export module mesh_reader; 
 
 export void read_mesh(const std::string& filename) {
+    std::string path = filename;
+    if (!std::filesystem::exists(path) && std::filesystem::exists("../" + path)) {
+        path = "../" + path;
+    }
+
     int ver = 0, dim = 0;
-    int64_t msh = GmfOpenMesh(filename.c_str(), GmfRead, &ver, &dim);
+    int64_t msh = GmfOpenMesh(path.c_str(), GmfRead, &ver, &dim);
     if (!msh) {
-        std::println(stderr, "Impossible d'ouvrir le fichier : {}", filename);
+        std::println(stderr, "Impossible d'ouvrir le fichier : {}", path);
         return;
     }
 
