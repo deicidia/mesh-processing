@@ -14,6 +14,7 @@ Makefile
 *.ninja
 *.cache
 *.log
+.cache/
 
 # --- Compilateurs & IDEs ---
 *.obj
@@ -24,3 +25,4 @@ Makefile
 .vs/
 .idea/
 *.user
+*.clangd

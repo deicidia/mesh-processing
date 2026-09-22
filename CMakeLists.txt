@@ -1,13 +1,16 @@
-cmake_minimum_required(VERSION 3.22)
-
-if(POLICY CMP0135)
-  cmake_policy(SET CMP0135 NEW)
-endif()
+cmake_minimum_required(VERSION 3.28)
 
 project(MyProject LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_library(mesh_core)
+target_sources(mesh_core
+  PUBLIC
+  FILE_SET CXX_MODULES FILES
+  src/mesh_io.cppm
+)
 
 include(FetchContent)
 
@@ -35,4 +38,7 @@ target_link_libraries(kokkos_info Kokkos::kokkos)
 add_executable(check_meshb test/check_meshb.cpp)
 target_link_libraries(check_meshb Meshb.8 Kokkos::kokkos)
 
+target_link_libraries(mesh_core PUBLIC Meshb.8 Kokkos::kokkos)
+add_executable(app src/main.cpp)
+target_link_libraries(app PRIVATE mesh_core)
 
