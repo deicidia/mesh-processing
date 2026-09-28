@@ -5,8 +5,19 @@ module;
 #include <cstdio>
 #include <string>
 #include <filesystem>
+#include <vector>
+#include <cstdint>
+#include <utility>
 
 export module mesh_reader; 
+
+export constexpr auto get_index(int u, int v) -> uint64_t
+{
+    if (u > v) {
+        std::swap(u, v);
+    }
+    return (uint64_t(u) << 32) | (uint64_t(v) & 0xFFFFFFFF);
+}
 
 export void read_mesh(const std::string& filename) {
     std::string path = filename;
@@ -28,5 +39,6 @@ export void read_mesh(const std::string& filename) {
     std::println("Version: {}, Dimension: {}", ver, dim);
     std::println("Sommets: {}, Triangles: {}", nb_vertices, nb_triangles);
 
+    std::vector<int> 
     GmfCloseMesh(msh);
 }
