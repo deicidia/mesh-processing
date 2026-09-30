@@ -11,4 +11,5 @@
 
 ## WIP
 
-> **Design Choice:** Will replace node-based hash maps with a flat **Half-Edge** structure to eliminate cache misses, avoid millions of heap allocations on large meshes, and ensure native GPU/Kokkos compatibility.
+- [x] Replace node-based hash maps with a flat **Half-Edge** structure to eliminate cache misses, avoid millions of heap allocations on large meshes, and ensure native GPU/Kokkos compatibility.
+- [ ] Use Hilbert Curve to reorder the triangles in memory to improve cache locality within the half-edge structure. The triangle list is ordered by the Hilbert value of the triangle's centroid by using `RenumberingMap`.
