@@ -3,8 +3,8 @@
 ## Problem & Motivation
 
 <p align="center">
-  <img src="img/median_dual_light.png#gh-light-mode-only" alt="Median Dual Cells" width="750">
-  <img src="img/median_dual_dark.png#gh-dark-mode-only" alt="Median Dual Cells" width="750">
+  <img src="img/median_dual_light.png#gh-light-mode-only" alt="Median Dual Cells" width="700">
+  <img src="img/median_dual_dark.png#gh-dark-mode-only" alt="Median Dual Cells" width="700">
 </p>
 
 Each triangle in the primal mesh contributes one third of its area to the median dual cell of each of its 3 vertices (sub-regions 1, 2, and 3 above). 
