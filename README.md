@@ -11,6 +11,19 @@ Each triangle in the primal mesh contributes one third of its area to the median
 
 A naive implementation results in a scatter memory pattern with severe atomic contention on vertex accumulators. The goal of this project is to explore and optimize memory layouts and traversal orders to maximize GPU memory throughput and verify mesh-wide area conservation.
 
+### Dual Traversal & Memory Ordering
+
+<p align="center">
+  <img src="img/dual_traversal_light.png#gh-light-mode-only" alt="Dual Mesh Traversal" width="700">
+  <img src="img/dual_traversal_dark.png#gh-dark-mode-only" alt="Dual Mesh Traversal" width="700">
+</p>
+
+My first idea was to order triangles by circulating around vertices. But drawing it by hand, I quickly realized that picking the next triangle and a starting point easily gets stuck in loops or dead ends.
+
+To avoid loops, I thought about building a Minimum Spanning Tree (MST) on the dual graph using Kruskal's algorithm. However, Kruskal relies on Union-Find, which is mostly sequential and hard to run efficiently on GPU.
+
+Another idea is to grow space-filling patterns from multiple seed points at the same time. Each seed would cover a small local patch of triangles that can be assigned directly to a GPU thread block, keeping data in local cache.
+
 ## ROADMAP
 
 1. Parse `.meshb` files using `libMeshb`
@@ -23,4 +36,4 @@ A naive implementation results in a scatter memory pattern with severe atomic co
 ## WIP
 
 - [x] Replace node-based hash maps with a flat **Half-Edge** structure to eliminate cache misses, avoid millions of heap allocations on large meshes, and ensure native GPU/Kokkos compatibility.
-- [ ] Use Hilbert Curve to reorder triangles in memory to improve cache locality within the half-edge structure. Triangles are ordered along the Hilbert curve based on their centroids using `RenumberingMap`.
+- [ ] Use cache-oblivious reordering to optimize triangle memory locality before building the half-edge structure.
