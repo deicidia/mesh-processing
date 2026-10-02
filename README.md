@@ -17,7 +17,7 @@ An experimental mesh processing project using Kokkos and C++23 modules to explor
 
 Each triangle in the mesh contributes one third of its area to the median dual cell of each of its 3 vertices (sub-regions 1, 2, and 3 above). 
 
-When computing this in parallel on GPU, multiple threads try to add their area contributions to the same vertex at the same time using `atomic_add`. When triangles are stored in an arbitrary order, these atomic collisions slow down memory throughput. The goal is to explore memory layouts and traversal orders that reduce collisions, while verifying mesh-wide area conservation.
+When computing this in parallel on GPU, multiple threads add their area contributions to shared vertices using `atomic_add`. When triangles are processed in an arbitrary order, these uncoalesced atomic writes scatter across memory, causing cache thrashing and saturating memory bandwidth. The goal is to explore memory layouts and traversal orders that maximize cache locality, while verifying mesh-wide area conservation.
 
 ## Quickstart
 
@@ -47,19 +47,19 @@ cmake --build --preset default
   <img src="img/dual_traversal_dark.png#gh-dark-mode-only" alt="Dual Mesh Traversal" width="700">
 </p>
 
-To reduce atomic collisions on shared vertices, neighboring triangles should be stored and processed close together in memory. Finding a good order was a progression of intuitions:
+To maximize cache reuse and avoid uncoalesced memory scatter, neighboring triangles should be stored and processed close together in memory. Finding a good order was a progression of intuitions:
 
 1. **Circulating around vertices:** My first idea was to follow triangles in a spiral around vertices. But drawing it by hand, I quickly realized that picking the next triangle easily gets stuck in loops, borders, or dead ends.
-2. **Dual Spanning Tree (Kruskal):** A tree on the dual graph would avoid loops, but building an MST with Kruskal requires Union-Find, which is mostly sequential and hard to run efficiently on GPU.
+2. **Dual Spanning Tree:** A tree on the dual graph would eliminate loops, but building a spanning tree requires graph algorithms that are inherently sequential and hard to run efficiently on GPU.
 3. **Growing patches from seeds:** Growing local clusters from multiple seed points at once so each GPU block handles a small patch. Promising, but coordinating cluster boundaries in parallel is tricky.
-4. **Spatial sorting (SFC):** Instead of following graph connectivity, sort triangles by their 3D coordinates along a Space-Filling Curve (SFC). Mapping 3D space to a 1D curve keeps geometrically close triangles together in memory, and sorting keys in parallel on GPU is very fast.
+4. **Spatial sorting (SFC):** Instead of traversing the mesh graph, sort triangles by their 3D coordinates along a Space-Filling Curve (SFC). Bypassing graph connectivity entirely keeps geometrically close triangles together in memory, and sorting keys in parallel on GPU is very fast.
 5. **Gray code on hypercube:** Can we build such a curve by treating quantized 3D coordinates as a hypercube? A Gray code visits the hypercube by flipping only one bit at a time, moving continuously between neighboring cells without spatial jumps.
 
 ## Status & Roadmap
 
 - [x] Read `.meshb` files via `libMeshb`
-- [x] Flat **Half-Edge** structure (contiguous `Kokkos::View`, zero dynamic heap allocations)
+- [x] Flat **Half-Edge** structure on host (contiguous array, zero dynamic heap allocations, GPU-ready)
 - [x] Naive parallel area computation and reduction (`parallel_for` + `parallel_reduce`)
 - [x] Machine-precision area conservation test
-- [ ] Spatial sorting of triangle primitives with SFC or Gray-code
+- [ ] Spatial sorting of triangle primitives with SFC or Gray code
 - [ ] Memory throughput benchmark: unordered vs. space-filling order under atomic contention
