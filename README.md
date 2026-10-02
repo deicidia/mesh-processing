@@ -63,4 +63,3 @@ To reduce atomic collisions on shared vertices, neighboring triangles should be 
 - [x] Machine-precision area conservation test
 - [ ] Spatial sorting of triangle primitives with SFC or Gray-code
 - [ ] Memory throughput benchmark: unordered vs. space-filling order under atomic contention
-- [ ] Visual inspection using `ViZiR`
