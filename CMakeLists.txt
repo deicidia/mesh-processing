@@ -10,6 +10,7 @@ target_sources(mesh_core
   PUBLIC
   FILE_SET CXX_MODULES FILES
   src/mesh_io.cppm
+  src/mesh_compute.cppm
 )
 
 include(FetchContent)
