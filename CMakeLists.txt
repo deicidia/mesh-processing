@@ -4,6 +4,7 @@ project(MyProject LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 if(Kokkos_ENABLE_HIP)
   find_path(ROCM_INCLUDE_DIR NAMES hip/hip_runtime.h
@@ -51,11 +52,15 @@ if(NOT libMeshb_FOUND)
   FetchContent_MakeAvailable(libmeshb)
 endif()
 
-add_executable(kokkos_info test/kokkos_info.cpp)
-target_link_libraries(kokkos_info Kokkos::kokkos)
+add_executable(test_kokkos test/test_kokkos.cpp)
+target_link_libraries(test_kokkos PRIVATE Kokkos::kokkos)
 
-add_executable(check_meshb test/check_meshb.cpp)
-target_link_libraries(check_meshb Meshb.8 Kokkos::kokkos)
+add_executable(test_meshb test/test_meshb.cpp)
+target_link_libraries(test_meshb PRIVATE Meshb.8)
+
+enable_testing()
+add_test(NAME test_kokkos COMMAND test_kokkos)
+add_test(NAME test_meshb COMMAND test_meshb "${CMAKE_SOURCE_DIR}/data/unit_square_132.meshb")
 
 target_link_libraries(mesh_core PUBLIC Meshb.8 Kokkos::kokkos)
 add_executable(app src/main.cpp)

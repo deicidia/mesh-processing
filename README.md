@@ -84,6 +84,13 @@ make docker-cpu    # Run on CPU in Docker
 make docker-amd MESH=data/unit_square_11k.meshb
 ```
 
+#### Installation Tests (Kokkos & libMeshb)
+```bash
+make test          # Run installation tests on CPU (Serial)
+make test-amd      # Run installation tests on AMD GPU (ROCm / HIP)
+make test-docker-amd # Run installation tests inside Docker (AMD GPU)
+```
+
 > [!NOTE]
 > Large `.meshb` datasets are excluded from Git. Provide your own or place them in `data/`.
 
