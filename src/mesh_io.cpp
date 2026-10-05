@@ -99,8 +99,8 @@ auto build_half_edges(const std::vector<std::array<int, 4>>& tri_buffer) -> std:
 }
 
 void print_mesh_info(const Mesh& mesh, size_t limit) {
-    std::println("Fichier chargé : Version {}, Dimension {}", mesh.ver, mesh.dim);
-    std::println("Sommets: {}, Triangles: {}", mesh.vertices.size(), mesh.triangles.size());
+    std::println("Loaded mesh: Version {}, Dimension {}", mesh.ver, mesh.dim);
+    std::println("Vertices: {}, Triangles: {}", mesh.vertices.size(), mesh.triangles.size());
 
     int boundary_count = 0;
     for (const auto& he : mesh.half_edges)
@@ -109,7 +109,7 @@ void print_mesh_info(const Mesh& mesh, size_t limit) {
             boundary_count++;
         }
     }
-    std::println("Demi-aretes: {} (Internes: {}, Bord: {})\n", 
+    std::println("Half-edges: {} (Internal: {}, Boundary: {})\n", 
                  mesh.half_edges.size(), mesh.half_edges.size() - boundary_count, boundary_count);
 
     int nb_triangles = static_cast<int>(mesh.triangles.size());
@@ -126,11 +126,11 @@ void print_mesh_info(const Mesh& mesh, size_t limit) {
 
         auto fmt_nb = [&](int h) -> std::string {
             int twin = mesh.half_edges[h].twin;
-            if (twin == -1) return "[BORD]";
+            if (twin == -1) return "[BOUNDARY]";
             return std::format("Triangle {:>3}", he_face(twin) + 1);
         };
 
-        std::println("Triangle {:>3} : [ {:>3} {:>3} {:>3} ] Ref {:>2} -> Voisins: [ {}, {}, {} ]",
+        std::println("Triangle {:>3} : [ {:>3} {:>3} {:>3} ] Ref {:>2} -> Neighbors: [ {}, {}, {} ]",
                      f + 1, v0, v1, v2, ref,
                      fmt_nb(h0), fmt_nb(h1), fmt_nb(h2));
     }
@@ -142,7 +142,7 @@ void print_mesh_info(const Mesh& mesh, size_t limit) {
         std::println("HalfEdge {:>3} (Triangle {:>3}, To: {:>3}) -> Twin: {:>3} ({})",
                      h, he_face(h) + 1, mesh.half_edges[h].to, 
                      twin, 
-                     (twin != -1 ? std::format("Triangle {}", he_face(twin) + 1) : "[BORD]"));
+                     (twin != -1 ? std::format("Triangle {}", he_face(twin) + 1) : "[BOUNDARY]"));
     }
 }
 
@@ -155,7 +155,7 @@ auto read_mesh(const std::string& filename) -> Mesh {
     int ver = 0, dim = 0;
     int64_t msh = GmfOpenMesh(path.c_str(), GmfRead, &ver, &dim);
     if (!msh) {
-        std::println(stderr, "Impossible d'ouvrir le fichier : {}", path);
+        std::println(stderr, "Unable to open file: {}", path);
         return {};
     }
 

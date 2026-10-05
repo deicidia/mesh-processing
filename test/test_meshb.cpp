@@ -6,12 +6,12 @@ int main(int argc, char** argv) {
     std::string filename = (argc > 1) ? argv[1] : "data/unit_square_132.meshb";
 
     std::println("=== Test libMeshb ===");
-    std::println("Fichier cible         : {}", filename);
+    std::println("Target file           : {}", filename);
 
     int ver = 0, dim = 0;
     int64_t msh = GmfOpenMesh(filename.c_str(), GmfRead, &ver, &dim);
     if (!msh) {
-        std::println(stderr, "[FAIL] Impossible d'ouvrir le fichier maillage : {}", filename);
+        std::println(stderr, "[FAIL] Unable to open mesh file: {}", filename);
         return 1;
     }
 
@@ -20,16 +20,16 @@ int main(int argc, char** argv) {
 
     std::println("Version               : {}", ver);
     std::println("Dimension             : {}", dim);
-    std::println("Nombre de sommets     : {}", nb_vertices);
-    std::println("Nombre de triangles   : {}", nb_triangles);
+    std::println("Vertices count        : {}", nb_vertices);
+    std::println("Triangles count       : {}", nb_triangles);
 
     GmfCloseMesh(msh);
 
     if (nb_vertices <= 0 || nb_triangles <= 0) {
-        std::println(stderr, "[FAIL] Le maillage ne contient aucun sommet ou triangle valide");
+        std::println(stderr, "[FAIL] Mesh contains no valid vertices or triangles");
         return 1;
     }
 
-    std::println("[OK] Lecture libMeshb validée");
+    std::println("[OK] libMeshb read validated");
     return 0;
 }

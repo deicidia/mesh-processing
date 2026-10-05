@@ -61,6 +61,7 @@ target_link_libraries(test_meshb PRIVATE Meshb.8)
 enable_testing()
 add_test(NAME test_kokkos COMMAND test_kokkos)
 add_test(NAME test_meshb COMMAND test_meshb "${CMAKE_SOURCE_DIR}/data/unit_square_132.meshb")
+add_test(NAME test_conservation COMMAND app "${CMAKE_SOURCE_DIR}/data/unit_square_132.meshb")
 
 target_link_libraries(mesh_core PUBLIC Meshb.8 Kokkos::kokkos)
 add_executable(app src/main.cpp)

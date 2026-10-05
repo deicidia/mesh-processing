@@ -9,7 +9,7 @@
     {
       "name": "default",
       "displayName": "Default",
-      "description": "Configuration générique par défaut",
+      "description": "Generic default configuration (CPU Serial)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
@@ -23,7 +23,7 @@
     {
       "name": "hip",
       "displayName": "AMD GPU (HIP)",
-      "description": "Calculs parallèles sur GPU AMD via ROCm HIP",
+      "description": "Parallel computing on AMD GPU via ROCm HIP",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-hip",
       "cacheVariables": {
@@ -42,7 +42,7 @@
     {
       "name": "cuda",
       "displayName": "NVIDIA GPU (CUDA)",
-      "description": "Calculs parallèles sur GPU NVIDIA via CUDA",
+      "description": "Parallel computing on NVIDIA GPU via CUDA",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-cuda",
       "cacheVariables": {
@@ -80,6 +80,32 @@
       "displayName": "Build (NVIDIA GPU CUDA)",
       "configurePreset": "cuda",
       "jobs": 0
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "displayName": "Test (CPU Serial)",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "hip",
+      "displayName": "Test (AMD GPU HIP)",
+      "configurePreset": "hip",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "cuda",
+      "displayName": "Test (NVIDIA GPU CUDA)",
+      "configurePreset": "cuda",
+      "output": {
+        "outputOnFailure": true
+      }
     }
   ]
 }

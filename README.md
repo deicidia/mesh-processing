@@ -84,11 +84,17 @@ make docker-cpu    # Run on CPU in Docker
 make docker-amd MESH=data/unit_square_11k.meshb
 ```
 
-#### Installation Tests (Kokkos & libMeshb)
+#### Tests & Validation (CTest)
 ```bash
-make test          # Run installation tests on CPU (Serial)
-make test-amd      # Run installation tests on AMD GPU (ROCm / HIP)
-make test-docker-amd # Run installation tests inside Docker (AMD GPU)
+# Via Make:
+make test              # Run test suite on CPU (Serial)
+make test-amd          # Run test suite on AMD GPU (ROCm / HIP)
+make test-docker-amd   # Run test suite inside Docker (AMD GPU)
+make test-docker-cpu   # Run test suite inside Docker (CPU)
+
+# Or directly with CTest presets:
+ctest --preset default
+ctest --preset hip
 ```
 
 > [!NOTE]
