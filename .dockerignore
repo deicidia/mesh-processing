@@ -1,0 +1,8 @@
+build/
+build-*/
+.git/
+.cache/
+.vscode/
+.idea/
+*.user
+*.clangd

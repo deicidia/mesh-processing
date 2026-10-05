@@ -1,10 +1,9 @@
-import mesh_reader;
-import mesh_compute;
-
 #include <Kokkos_Core.hpp>
 #include <string>
 #include <print>
 #include <cmath>
+#include "kernels/mesh_compute.hpp"
+#include "mesh_io.hpp"
 
 int main(int argc, char** argv) {
     Kokkos::initialize(argc, argv);

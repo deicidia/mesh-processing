@@ -1,25 +1,7 @@
-module;
-
-#include <Kokkos_Core.hpp>
+#include "kernels/mesh_compute.hpp"
 #include <cmath>
-#include <print>
 
-export module mesh_compute;
-
-import mesh_reader;
-
-export struct MeshDeviceData {
-    int nb_vertices = 0;
-    int nb_triangles = 0;
-
-    Kokkos::View<double*[3]> coords;
-    Kokkos::View<int*[3]> triangles;
-    
-    Kokkos::View<double*> triangle_areas;
-    Kokkos::View<double*> dual_areas;
-};
-
-export auto upload_to_device(const Mesh& mesh) -> MeshDeviceData {
+auto upload_to_device(const Mesh& mesh) -> MeshDeviceData {
     MeshDeviceData dev;
     dev.nb_vertices = static_cast<int>(mesh.vertices.size());
     dev.nb_triangles = static_cast<int>(mesh.triangles.size());
@@ -50,7 +32,7 @@ export auto upload_to_device(const Mesh& mesh) -> MeshDeviceData {
     return dev;
 }
 
-export void compute_triangle_areas(MeshDeviceData& dev) {
+void compute_triangle_areas(MeshDeviceData& dev) {
     auto coords = dev.coords;
     auto triangles = dev.triangles;
     auto areas = dev.triangle_areas;
@@ -81,7 +63,7 @@ export void compute_triangle_areas(MeshDeviceData& dev) {
     );
 }
 
-export void compute_median_dual_areas_naive(MeshDeviceData& dev) {
+void compute_median_dual_areas_naive(MeshDeviceData& dev) {
     auto triangles = dev.triangles;
     auto tri_areas = dev.triangle_areas;
     auto dual_areas = dev.dual_areas;
@@ -103,7 +85,7 @@ export void compute_median_dual_areas_naive(MeshDeviceData& dev) {
     );
 }
 
-export auto compute_total_primal_area(const MeshDeviceData& dev) -> double {
+auto compute_total_primal_area(const MeshDeviceData& dev) -> double {
     auto areas = dev.triangle_areas;
     double total = 0.0;
     Kokkos::parallel_reduce("reduce_primal_area", dev.nb_triangles,
@@ -114,7 +96,7 @@ export auto compute_total_primal_area(const MeshDeviceData& dev) -> double {
     return total;
 }
 
-export auto compute_total_dual_area(const MeshDeviceData& dev) -> double {
+auto compute_total_dual_area(const MeshDeviceData& dev) -> double {
     auto dual_areas = dev.dual_areas;
     double total = 0.0;
     Kokkos::parallel_reduce("reduce_dual_area", dev.nb_vertices,

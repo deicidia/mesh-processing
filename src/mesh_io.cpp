@@ -1,4 +1,4 @@
-module; 
+#include "mesh_io.hpp"
 
 #include <libmeshb8.h>
 #include <print>
@@ -11,55 +11,13 @@ module;
 #include <cstdint>
 #include <format>
 
-export module mesh_reader; 
-
-/*
-    * GmfGetBlock(MeshIdx, KeyWord, BeginLine, EndLine, MapType, RenumberingMap, Procedure, ...)
-    * - MeshIdx        : Descripteur retourné par GmfOpenMesh.
-    * - KeyWord        : Mot-clé des entités à lire (ex: GmfTriangles, GmfVertices).
-    * - BeginLine      : Ligne de départ (1-based, permet la lecture parallèle par morceaux).
-    * - EndLine        : Dernière ligne à lire (ex: nb_triangles).
-    * - MapType        : Type d'entier pour la table de renumérotation optionnelle (0 si inutilisé).
-    * - RenumberingMap : Pointeur vers table de renumérotation (nullptr si inutilisé).
-    * - Procedure      : Callback exécuté après lecture de chaque bloc (nullptr si inutilisé).
-    * - arguments...   : Description des données de sortie :
-    *                    - Mode scalaire : Type, &premier, &dernier
-    *                    - Mode vecteur  : TypeVec, taille_vecteur, &premier[0], &dernier[0]
-    *                      (Ici: GmfIntVec, 4 entiers par triangle [v1, v2, v3, ref])
-    */
-
-export struct Point {
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
-    int ref = 0;
-};
-
-export struct HalfEdge {
-    int to = -1;
-    int twin = -1;
-};
-
-export struct Mesh {
-    int dim = 0;
-    int ver = 0;
-    std::vector<Point> vertices;
-    std::vector<std::array<int, 4>> triangles;
-    std::vector<HalfEdge> half_edges;
-};
-
-export constexpr int he_face(int h) { return h / 3; }
-export constexpr int he_next(int h) { return (h % 3 == 2) ? h - 2 : h + 1; }
-export constexpr int he_prev(int h) { return (h % 3 == 0) ? h + 2 : h - 1; }
-
 struct EdgeRef {
     int u;
     int v;
     int h;
 };
 
-
-auto read_vertices_block(int64_t msh, int64_t nb_vertices, int dim) -> std::vector<Point> {
+static auto read_vertices_block(int64_t msh, int64_t nb_vertices, int dim) -> std::vector<Point> {
     if (nb_vertices <= 0) return {};
     std::vector<Point> vertices(nb_vertices);
 
@@ -79,7 +37,7 @@ auto read_vertices_block(int64_t msh, int64_t nb_vertices, int dim) -> std::vect
     return vertices;
 }
 
-auto read_triangles_block(int64_t msh, int64_t nb_triangles) -> std::vector<std::array<int, 4>> {
+static auto read_triangles_block(int64_t msh, int64_t nb_triangles) -> std::vector<std::array<int, 4>> {
     if (nb_triangles <= 0) return {};
     std::vector<std::array<int, 4>> tri_buffer(nb_triangles);
 
@@ -91,7 +49,7 @@ auto read_triangles_block(int64_t msh, int64_t nb_triangles) -> std::vector<std:
     return tri_buffer;
 }
 
-export auto build_half_edges(const std::vector<std::array<int, 4>>& tri_buffer) -> std::vector<HalfEdge> {
+auto build_half_edges(const std::vector<std::array<int, 4>>& tri_buffer) -> std::vector<HalfEdge> {
     int64_t nb_triangles = static_cast<int64_t>(tri_buffer.size());
     std::vector<HalfEdge> half_edges(3 * nb_triangles);
     std::vector<EdgeRef> refs(3 * nb_triangles);
@@ -140,7 +98,7 @@ export auto build_half_edges(const std::vector<std::array<int, 4>>& tri_buffer) 
     return half_edges;
 }
 
-export void print_mesh_info(const Mesh& mesh, size_t limit = 10) {
+void print_mesh_info(const Mesh& mesh, size_t limit) {
     std::println("Fichier chargé : Version {}, Dimension {}", mesh.ver, mesh.dim);
     std::println("Sommets: {}, Triangles: {}", mesh.vertices.size(), mesh.triangles.size());
 
@@ -188,7 +146,7 @@ export void print_mesh_info(const Mesh& mesh, size_t limit = 10) {
     }
 }
 
-export auto read_mesh(const std::string& filename) -> Mesh {
+auto read_mesh(const std::string& filename) -> Mesh {
     std::string path = filename;
     if (!std::filesystem::exists(path) && std::filesystem::exists("../" + path)) {
         path = "../" + path;

@@ -1,5 +1,5 @@
-# Ignorer tous les fichiers de données dans ce dossier
+# Ignore all data files in this directory
 *
 
-# Conserver ce fichier gitignore
+# Keep this gitignore file
 !.gitignore

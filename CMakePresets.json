@@ -16,15 +16,69 @@
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_BUILD_WITH_INSTALL_RPATH": "ON"
+      }
+    },
+    {
+      "name": "hip",
+      "displayName": "AMD GPU (HIP)",
+      "description": "Calculs parallèles sur GPU AMD via ROCm HIP",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-hip",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "hipcc",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_BUILD_WITH_INSTALL_RPATH": "ON",
+        "Kokkos_ENABLE_HIP": "ON",
+        "Kokkos_ARCH_AMD_GFX1100": "ON"
+      },
+      "environment": {
+        "PATH": "/opt/rocm/core-7.14/bin:/opt/rocm/bin:$penv{PATH}"
+      }
+    },
+    {
+      "name": "cuda",
+      "displayName": "NVIDIA GPU (CUDA)",
+      "description": "Calculs parallèles sur GPU NVIDIA via CUDA",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-cuda",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_BUILD_WITH_INSTALL_RPATH": "ON",
+        "Kokkos_ENABLE_CUDA": "ON",
+        "Kokkos_ENABLE_CUDA_LAMBDA": "ON",
+        "Kokkos_ENABLE_CUDA_CONSTEXPR": "ON",
+        "Kokkos_ARCH_AMPERE86": "ON"
+      },
+      "environment": {
+        "PATH": "/usr/local/cuda/bin:$penv{PATH}",
+        "CUDA_ROOT": "/usr/local/cuda"
       }
     }
   ],
   "buildPresets": [
     {
       "name": "default",
-      "displayName": "Build",
+      "displayName": "Build (CPU Serial)",
       "configurePreset": "default",
+      "jobs": 0
+    },
+    {
+      "name": "hip",
+      "displayName": "Build (AMD GPU HIP)",
+      "configurePreset": "hip",
+      "jobs": 0
+    },
+    {
+      "name": "cuda",
+      "displayName": "Build (NVIDIA GPU CUDA)",
+      "configurePreset": "cuda",
       "jobs": 0
     }
   ]
