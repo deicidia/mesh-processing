@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <format>
+#include <unordered_map>
 
 struct EdgeRef {
     int u;
@@ -47,6 +48,23 @@ static auto read_triangles_block(int64_t msh, int64_t nb_triangles) -> std::vect
                 &tri_buffer.back()[0]);
 
     return tri_buffer;
+}
+
+auto build_hash_map(const std::vector<std::array<int, 4>>& tri_buffer) -> std::unordered_map<uint64_t, std::vector<int>> {
+
+    std::unordered_map<uint64_t, std::vector<int>> edge_map;
+    edge_map.reserve(tri_buffer.size() * 3 / 2);
+    for (size_t i = 0; i < tri_buffer.size(); ++i)
+    {
+        int v0 = tri_buffer[i][0];
+        int v1 = tri_buffer[i][1];
+        int v2 = tri_buffer[i][2];
+
+        edge_map[encode_edge(v0, v1)].push_back(i);
+        edge_map[encode_edge(v1, v2)].push_back(i);
+        edge_map[encode_edge(v2, v0)].push_back(i);
+    }
+    return edge_map;
 }
 
 auto build_half_edges(const std::vector<std::array<int, 4>>& tri_buffer) -> std::vector<HalfEdge> {

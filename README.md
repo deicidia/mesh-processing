@@ -72,6 +72,7 @@ cmake --build --preset cuda
 make amd           # Build & run on AMD GPU (ROCm / HIP)
 make nvidia        # Build & run on NVIDIA GPU (CUDA)
 make cpu           # Build & run on CPU (Serial)
+make bench         # Benchmark build_hash_map vs build_half_edges
 ```
 
 #### Docker Execution

@@ -2,6 +2,7 @@ IMAGE_NAME ?= mesh-processing
 MESH       ?= data/unit_square_132.meshb
 RENDER_GID ?= $(shell stat -c '%g' /dev/dri/renderD128 2>/dev/null || echo 992)
 
+
 # Common Docker run wrappers
 DOCKER_RUN_AMD = docker run --rm \
 	--device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined \
@@ -16,7 +17,7 @@ DOCKER_RUN_NVIDIA = docker run --rm \
 DOCKER_RUN_CPU = docker run --rm \
 	-v $$(pwd)/data:/app/data
 
-.PHONY: all help clean \
+.PHONY: all help clean bench \
         amd nvidia cpu hip cuda \
         test test-cpu test-amd test-hip test-nvidia \
         docker-amd docker-nvidia docker-cpu docker-hip docker-cuda \
@@ -29,6 +30,7 @@ help:
 	@echo "  make amd              # Build & run on AMD GPU (ROCm / HIP)"
 	@echo "  make nvidia           # Build & run on NVIDIA GPU (CUDA)"
 	@echo "  make cpu              # Build & run on CPU (Serial)"
+	@echo "  make bench            # Benchmark Hash Map vs Half-Edges"
 	@echo ""
 	@echo "Tests & Validation (CTest):"
 	@echo "  make test             # Run test suite on CPU (Serial)"
@@ -42,7 +44,8 @@ help:
 	@echo "  make docker-cpu       # Run on CPU in Docker"
 	@echo ""
 	@echo "Option:"
-	@echo "  MESH=<path>           # e.g. make amd MESH=data/unit_square_11k.meshb"
+	@echo "  MESH=<path>           # e.g. make bench MESH=data/unit_square_1m.meshb"
+
 
 # ==============================================================================
 # Local Execution
@@ -66,6 +69,11 @@ cpu:
 	@if [ ! -d "build" ]; then cmake --preset default; fi
 	cmake --build --preset default
 	./build/app $(MESH)
+
+bench:
+	@if [ ! -d "build" ]; then cmake --preset default; fi
+	cmake --build --preset default --target benchmark
+	./build/benchmark $(if $(filter data/unit_square_132.meshb,$(MESH)),data/unit_square_1m.meshb,$(MESH))
 
 # ==============================================================================
 # Tests (CTest)

@@ -1,0 +1,10 @@
+CompileFlags:
+  Remove:
+    - -fmodules-ts
+    - -fmodule-mapper=*
+    - -fdeps-format=*
+
+Diagnostics:
+  Suppress:
+    - "*different definitions in different modules*"
+    - "*Too many errors emitted*"

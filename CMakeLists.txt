@@ -67,3 +67,5 @@ target_link_libraries(mesh_core PUBLIC Meshb.8 Kokkos::kokkos)
 add_executable(app src/main.cpp)
 target_link_libraries(app PRIVATE mesh_core)
 
+add_executable(benchmark tools/benchmark.cpp)
+target_link_libraries(benchmark PRIVATE mesh_core)
